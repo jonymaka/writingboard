@@ -1,0 +1,494 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   墨庐 · 写作案头  —  literati ink aesthetic
+   ============================================================ */
+
+:root {
+  --font-ui: 'Noto Sans SC', -apple-system, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  --font-display: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+  --font-editor: 'LXGW WenKai', 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+
+  --bg: #f4eddd;
+  --surface: #faf4e6;
+  --surface-2: #f0e7d2;
+  --surface-3: #e3d7bb;
+  --border: #dfd3b6;
+  --text: #2b2620;
+  --text-2: #5c5345;
+  --text-3: #9a8f78;
+  --accent: #b23a2e;
+  --accent-soft: #f7e5dc;
+  --accent-text: #fff8ee;
+  --highlight: #fbe3d8;
+  --highlight-text: #8a2418;
+  --ok: #4d7c4a;
+  --danger: #a33b2e;
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 10px 30px -18px rgba(90, 70, 40, 0.55);
+  --ink-glow: rgba(178, 58, 46, 0.55);
+}
+
+/* 朱砂 · 温砂暮写 */
+[data-theme='paper'] {
+  --bg: #e7d7c0;
+  --surface: #f5ead7;
+  --surface-2: #ead9be;
+  --surface-3: #dcc7a4;
+  --border: #d5bf9b;
+  --text: #3a2c1e;
+  --text-2: #6a563a;
+  --text-3: #a4906d;
+  --accent: #a93226;
+  --accent-soft: #f3dccf;
+  --accent-text: #fff7ea;
+  --highlight: #f8d8c6;
+  --highlight-text: #7a1e12;
+  --ok: #4d7c4a;
+  --danger: #a33b2e;
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset,
+    0 12px 34px -18px rgba(100, 60, 25, 0.6);
+  --ink-glow: rgba(169, 50, 38, 0.6);
+}
+
+/* 墨夜 · 玄墨夜书 */
+[data-theme='dark'] {
+  --bg: #17130e;
+  --surface: #201b14;
+  --surface-2: #2b251b;
+  --surface-3: #3a3224;
+  --border: #38301f;
+  --text: #ede5d3;
+  --text-2: #c6b99f;
+  --text-3: #8d8168;
+  --accent: #d95c4b;
+  --accent-soft: #3a2018;
+  --accent-text: #ffefe0;
+  --highlight: #431f13;
+  --highlight-text: #f2a08c;
+  --ok: #68d391;
+  --danger: #fc8181;
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 14px 40px -18px rgba(0, 0, 0, 0.85);
+  --ink-glow: rgba(217, 92, 75, 0.65);
+}
+
+/* ---- paper grain (SVG fractal noise) ---- */
+:root {
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.36 0 0 0 0 0.3 0 0 0 0.55 0'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>");
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(1100px 700px at 88% -12%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 62%),
+    radial-gradient(900px 600px at -8% 108%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ---- full-app grain overlay ---- */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background-image: var(--grain);
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+}
+
+[data-theme='dark'] body::after {
+  opacity: 0.08;
+}
+
+/* ============================================================
+   typography helpers
+   ============================================================ */
+.font-display {
+  font-family: var(--font-display);
+}
+.font-editor {
+  font-family: var(--font-editor);
+}
+.v-text {
+  writing-mode: vertical-rl;
+  letter-spacing: 0.35em;
+}
+
+/* ---- Chinese seal (印章) ---- */
+.seal {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-family: var(--font-display);
+  font-weight: 900;
+  border-radius: 5px;
+  box-shadow:
+    inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 45%, #000),
+    0 2px 6px -2px var(--ink-glow);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+.seal::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid color-mix(in srgb, var(--accent-text) 32%, transparent);
+  border-radius: 2px;
+}
+.seal:hover {
+  transform: rotate(-4deg) scale(1.06);
+}
+.seal:active {
+  transform: rotate(-4deg) scale(0.95);
+}
+
+/* ---- chips & buttons ---- */
+.chip {
+  background: var(--surface-2);
+  color: var(--text-2);
+  border-radius: 7px;
+  font-family: var(--font-ui);
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+.chip:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.chip:active {
+  transform: scale(0.97);
+}
+.chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.chip-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.btn-accent {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-radius: 7px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  box-shadow: 0 2px 10px -4px var(--ink-glow);
+  transition: filter 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+.btn-accent:hover {
+  filter: brightness(1.07);
+  box-shadow: 0 4px 14px -4px var(--ink-glow);
+}
+.btn-accent:active {
+  transform: scale(0.98);
+}
+.btn-accent:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ---- toolbar ---- */
+.ink-bar {
+  position: relative;
+}
+.ink-bar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent) 88px, var(--border) 88px, var(--border) 100%);
+}
+
+/* ---- editor paper sheet (稿纸) ---- */
+.editor-sheet {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 3px 12px 12px 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.editor-sheet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--grain);
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+}
+.editor-sheet::after {
+  content: '墨';
+  position: absolute;
+  top: 10px;
+  right: 22px;
+  z-index: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 150px;
+  line-height: 1;
+  color: var(--text);
+  opacity: 0.045;
+  transform: rotate(3deg);
+  pointer-events: none;
+  user-select: none;
+}
+/* 界栏：稿纸顶部的朱丝线 */
+.editor-sheet .sheet-rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 1;
+  background: linear-gradient(90deg, var(--accent) 0 72px, transparent 72px);
+  opacity: 0.75;
+}
+.editor-sheet > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   ProseMirror editor
+   ============================================================ */
+.ProseMirror {
+  outline: none;
+  font-family: var(--font-editor);
+  line-height: 2.05;
+  font-size: 17px;
+  color: var(--text);
+  min-height: 100%;
+}
+.ProseMirror p {
+  margin: 0.6em 0;
+}
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.5;
+}
+.ProseMirror h1 {
+  font-size: 2em;
+  margin: 0.9em 0 0.5em;
+}
+.ProseMirror h2 {
+  font-size: 1.5em;
+  margin: 0.85em 0 0.45em;
+  padding-left: 0.5em;
+  border-left: 3px solid var(--accent);
+}
+.ProseMirror h3 {
+  font-size: 1.2em;
+  margin: 0.8em 0 0.35em;
+}
+.ProseMirror ul {
+  list-style: none;
+  padding-left: 0.2em;
+  margin: 0.5em 0;
+}
+.ProseMirror ul li {
+  position: relative;
+  padding-left: 1.4em;
+}
+.ProseMirror ul li::before {
+  content: '・';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+.ProseMirror ol {
+  list-style: decimal;
+  padding-left: 1.6em;
+  margin: 0.5em 0;
+}
+.ProseMirror blockquote {
+  border-left: 3px solid var(--accent);
+  padding-left: 1em;
+  margin: 0.6em 0;
+  color: var(--text-2);
+  font-style: italic;
+}
+.ProseMirror code {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.08em 0.35em;
+  font-size: 0.88em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.ProseMirror pre {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.9em 1.1em;
+  overflow-x: auto;
+}
+.ProseMirror pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+/* AI 朱批：红笔批注式高亮 */
+.ProseMirror mark {
+  background: var(--highlight);
+  color: var(--highlight-text);
+  border-radius: 2px;
+  padding: 0 2px;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--highlight-text) 30%, transparent) inset;
+}
+.ProseMirror .is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--text-3);
+  opacity: 0.7;
+  float: left;
+  height: 0;
+  pointer-events: none;
+  font-family: var(--font-editor);
+}
+.ProseMirror ::selection {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  color: var(--text);
+}
+
+/* ---- scrollbar ---- */
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-3) 45%, transparent);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  background-clip: content-box;
+  border: 2px solid transparent;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ============================================================
+   motion
+   ============================================================ */
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes sealStamp {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) rotate(-30deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.15) rotate(4deg);
+  }
+  100% {
+    transform: scale(1) rotate(-3deg);
+  }
+}
+@keyframes barGrow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes chipIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.anim-reveal {
+  animation: riseIn 0.6s cubic-bezier(0.22, 0.7, 0.2, 1) both;
+}
+.anim-reveal-2 {
+  animation: riseIn 0.6s cubic-bezier(0.22, 0.7, 0.2, 1) 0.08s both;
+}
+.anim-reveal-3 {
+  animation: riseIn 0.6s cubic-bezier(0.22, 0.7, 0.2, 1) 0.16s both;
+}
+.anim-seal {
+  animation: sealStamp 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) 0.1s both;
+}
+.anim-panel {
+  animation: slideInRight 0.32s cubic-bezier(0.22, 0.8, 0.2, 1) both;
+}
+.anim-chip {
+  animation: chipIn 0.22s ease both;
+}
+.doc-bar {
+  transform-origin: top center;
+  animation: barGrow 0.3s ease both;
+}
+
+/* bubble menu pop */
+[data-tippy-root] .anim-chip {
+  animation: chipIn 0.2s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
