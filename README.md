@@ -53,63 +53,6 @@
 
 可在设置中自由切换，选择会持久化。
 
-## 快速开始
-
-```bash
-npm install
-npm run dev     # 打开 http://localhost:5173
-```
-
-首次使用，点击右上角 **⚙️ 设置**，填写：
-
-- **Base URL**：任意 OpenAI 兼容服务的地址，如 `https://api.openai.com/v1`
-- **API Key**
-- **模型名称**：如 `gpt-4o-mini`、`deepseek-chat`、`glm-4-flash`、`qwen-plus`
-- **温度**：落笔温度（创意度），范围 0–1.5
-
-然后在编辑器中选中文字，即可使用 AI 工具栏。
-
-> ⚠️ 浏览器直调对服务端有 **CORS 限制**，需使用允许浏览器跨域访问的 OpenAI 兼容端点。
-
-## 部署到 GitHub Pages
-
-1. 新建 GitHub 仓库并推送代码：
-   ```bash
-   git init && git add . && git commit -m "feat: 写作工坊 AI 写作平台"
-   git remote add origin <仓库地址>
-   git push -u origin main
-   ```
-2. 仓库 **Settings → Pages → Source** 选择 **GitHub Actions**
-3. push 到 `main` 分支自动构建并部署（见 `.github/workflows/deploy.yml`）
-4. 首次打开站点，在设置中填写 API Key
-
-## 安全说明
-
-- API Key 仅保存在浏览器 localStorage，**不进入代码、不上传任何服务器**
-- 网站部署在公网后，任何访问者都能通过开发者工具读取该 Key
-- **建议使用免费或低配额 Key，仅供自己使用**；可在设置中随时更换
-- 文章数据仅存于本机浏览器，可用「全量数据」JSON 导出做备份
-
-## 目录结构
-
-```
-src/
-├── ai/provider.ts               # OpenAI 兼容流式客户端（Base URL / Key / 模型可配置）
-├── lib/
-│   ├── prompts.ts               # 指令模板 + 上下文窗口组装
-│   ├── data.ts                  # 全量数据 JSON 序列化 / 校验
-│   ├── export.ts                # HTML/Markdown 导入导出
-│   └── stickyHighlightPlugin.ts # 批注格式防粘连插件
-├── store/                       # Zustand：文档 / 设置 / UI 状态
-├── hooks/
-│   ├── useAiRequest.ts          # 流式请求（含 AbortController）
-│   └── useReplaceSelection.ts   # 原地替换 + 输出清洗
-└── components/
-    ├── editor/                  # 编辑器 + 浮动 AI 工具栏 + 顶部栏
-    ├── sidebar/                 # 文档列表 + 设置面板
-    └── ai-panel/                # 右侧停靠面板（对语 / 撮要 / 校雠）
-```
-
 ## 技术栈
 
 React 18 · Vite · TypeScript · TipTap · Tailwind CSS · Zustand · Vitest
