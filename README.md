@@ -53,6 +53,75 @@
 
 可在设置中自由切换，选择会持久化。
 
+## 快速开始
+
+```bash
+npm install
+npm run dev     # 打开 http://localhost:5173
+```
+
+首次使用，点击右上角 **⚙️ 设置**，填写：
+
+- **Base URL**：任意 OpenAI 兼容服务的地址，如 `https://api.openai.com/v1`
+- **API Key**
+- **模型名称**：如 `gpt-4o-mini`、`deepseek-chat`、`glm-4-flash`、`qwen-plus`
+- **温度**：落笔温度（创意度），范围 0–1.5
+
+然后在编辑器中选中文字，即可使用 AI 工具栏。
+
+> ⚠️ 浏览器直调对服务端有 **CORS 限制**，需使用允许浏览器跨域访问的 OpenAI 兼容端点。
+
+## 在线站点
+
+已部署实例：<https://jonymaka.github.io/writingboard/>
+
+## 部署到 GitHub Pages
+
+仓库使用 `gh-pages` 分支托管构建产物，Pages 来源已设为该分支（见仓库 Settings → Pages）。
+
+**首次发布**：
+
+```bash
+npm run build
+rm -rf /tmp/wb-pages && mkdir -p /tmp/wb-pages
+cp -R dist/. /tmp/wb-pages/
+cd /tmp/wb-pages
+git init -b gh-pages && git add -A && git commit -m "deploy"
+git remote add origin https://github.com/jonymaka/writingboard.git
+git push -f origin gh-pages
+```
+
+**更新**：重复上述命令（重新 build 后强制推送 `gh-pages` 分支）。
+
+> 可选：若希望「push 到 main 即自动部署」，仓库内已备有 `.github/workflows/deploy.yml` 工作流。但推送到 GitHub 的 workflow 文件需要 token 的 `workflow` 权限——请先运行 `gh auth refresh -h github.com -s workflow` 完成授权，再 `git add .github/workflows/deploy.yml && git push`，并把仓库 Settings → Pages → Source 改为 **GitHub Actions**。
+
+## 安全说明
+
+- API Key 仅保存在浏览器 localStorage，**不进入代码、不上传任何服务器**
+- 网站部署在公网后，任何访问者都能通过开发者工具读取该 Key
+- **建议使用免费或低配额 Key，仅供自己使用**；可在设置中随时更换
+- 文章数据仅存于本机浏览器，可用「全量数据」JSON 导出做备份
+
+## 目录结构
+
+```
+src/
+├── ai/provider.ts               # OpenAI 兼容流式客户端（Base URL / Key / 模型可配置）
+├── lib/
+│   ├── prompts.ts               # 指令模板 + 上下文窗口组装
+│   ├── data.ts                  # 全量数据 JSON 序列化 / 校验
+│   ├── export.ts                # HTML/Markdown 导入导出
+│   └── stickyHighlightPlugin.ts # 批注格式防粘连插件
+├── store/                       # Zustand：文档 / 设置 / UI 状态
+├── hooks/
+│   ├── useAiRequest.ts          # 流式请求（含 AbortController）
+│   └── useReplaceSelection.ts   # 原地替换 + 输出清洗
+└── components/
+    ├── editor/                  # 编辑器 + 浮动 AI 工具栏 + 顶部栏
+    ├── sidebar/                 # 文档列表 + 设置面板
+    └── ai-panel/                # 右侧停靠面板（对语 / 撮要 / 校雠）
+```
+
 ## 技术栈
 
 React 18 · Vite · TypeScript · TipTap · Tailwind CSS · Zustand · Vitest
