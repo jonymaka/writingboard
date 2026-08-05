@@ -1,18 +1,23 @@
 import { useState } from 'react'
 import type { Editor } from '@tiptap/react'
 import { BubbleMenu } from '@tiptap/react'
-import { buildSelectionMessages, STYLE_TARGETS, type SelectionAction } from '../../lib/prompts'
+import { buildSelectionMessages, buildAnnotationMessages, STYLE_TARGETS, type SelectionAction } from '../../lib/prompts'
 import { useAiRequest } from '../../hooks/useAiRequest'
 import {
   useInsertAfterSelection,
   useReplaceSelection,
+  normalizeOutput,
 } from '../../hooks/useReplaceSelection'
 import { useSettingsStore } from '../../store/useSettingsStore'
 import { useUiStore } from '../../store/useUiStore'
+import { useDocStore } from '../../store/useDocStore'
+import { useAnnotationStore } from '../../store/useAnnotationStore'
 
 interface ActiveJob {
   action: SelectionAction
   sourceText: string
+  from: number
+  to: number
   output: string
   streaming: boolean
   error?: string
@@ -29,6 +34,7 @@ const MAIN_ACTIONS: { key: SelectionAction; label: string }[] = [
   { key: 'shorten', label: '缩写' },
   { key: 'style', label: '风骨' },
   { key: 'fix', label: '校雠' },
+  { key: 'annotate', label: '旁批' },
   { key: 'custom', label: '手谕' },
 ]
 
@@ -58,15 +64,18 @@ export function AiBubbleMenu({ editor }: { editor: Editor }) {
     if (!sourceText) return
     const { before, after } = getSelectionContext(from, to)
     const context = { before, after }
-    const newJob: ActiveJob = { action, sourceText, output: '', streaming: true, opts: { ...opts, ...context } }
+    const newJob: ActiveJob = { action, sourceText, from, to, output: '', streaming: true, opts: { ...opts, ...context } }
     setJob(newJob)
     setMode('main')
     setStreaming(true)
-    const messages = buildSelectionMessages(action, sourceText, newJob.opts)
+    const messages =
+      action === 'annotate'
+        ? buildAnnotationMessages(sourceText, { before, after })
+        : buildSelectionMessages(action, sourceText, newJob.opts)
     void run(messages, {
-      onDelta: (full) => setJob((j) => (j ? { ...j, output: full } : j)),
+      onDelta: (full) => setJob((j) => (j ? { ...j, output: normalizeOutput(full) } : j)),
       onDone: (full) => {
-        setJob((j) => (j ? { ...j, output: full, streaming: false } : j))
+        setJob((j) => (j ? { ...j, output: normalizeOutput(full), streaming: false } : j))
         setStreaming(false)
       },
       onError: (err) => {
@@ -76,10 +85,32 @@ export function AiBubbleMenu({ editor }: { editor: Editor }) {
     })
   }
 
+  const applyAnnotation = () => {
+    if (!job || !job.output) return
+    const docState = useDocStore.getState()
+    const activeDoc = docState.docs.find((d) => d.id === docState.activeId)
+    if (!activeDoc) return
+    const created = useAnnotationStore.getState().add(activeDoc.id, {
+      text: job.sourceText,
+      before: job.opts?.before ?? '',
+      after: job.opts?.after ?? '',
+      note: job.output,
+    })
+    editor
+      .chain()
+      .focus()
+      .setTextSelection({ from: job.from, to: job.to })
+      .setMark('annotationMark')
+      .insertContentAt(job.to, { type: 'annotationRef', attrs: { number: created.number } })
+      .run()
+  }
+
   const applyResult = () => {
     if (!job || !job.output) return
     if (job.action === 'continue') {
       insertAfterSelection(job.output)
+    } else if (job.action === 'annotate') {
+      applyAnnotation()
     } else {
       replaceSelection(job.output)
     }
@@ -195,7 +226,15 @@ export function AiBubbleMenu({ editor }: { editor: Editor }) {
             <div className="mb-1 flex items-center justify-between">
               <span className="text-[10.5px]" style={{ color: 'var(--text-3)', fontFamily: 'var(--font-ui)' }}>
                 已选 {selectedCount} 字 ·{' '}
-                {job.streaming ? '朱批中 …' : job.error ? '落笔有误' : '朱批已成'}
+                {job.streaming
+                  ? job.action === 'annotate'
+                    ? '旁批中 …'
+                    : '朱批中 …'
+                  : job.error
+                    ? '落笔有误'
+                    : job.action === 'annotate'
+                      ? '旁批已成'
+                      : '朱批已成'}
               </span>
               {job.streaming && (
                 <button
@@ -221,7 +260,7 @@ export function AiBubbleMenu({ editor }: { editor: Editor }) {
                   className="btn-accent rounded-md px-3 py-1 text-[12px]"
                   disabled={!job.output}
                 >
-                  朱批入文
+                  {job.action === 'annotate' ? '落批' : '朱批入文'}
                 </button>
                 <button
                   onClick={() => startJob(job.action, job.opts)}

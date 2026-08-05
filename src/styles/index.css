@@ -26,6 +26,7 @@
   --highlight-text: #8a2418;
   --ok: #4d7c4a;
   --danger: #a33b2e;
+  --annot: #2f6fed;
   --shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset,
     0 10px 30px -18px rgba(90, 70, 40, 0.55);
   --ink-glow: rgba(178, 58, 46, 0.55);
@@ -70,6 +71,7 @@
   --highlight-text: #f2a08c;
   --ok: #68d391;
   --danger: #fc8181;
+  --annot: #7aa2f7;
   --shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
     0 14px 40px -18px rgba(0, 0, 0, 0.85);
   --ink-glow: rgba(217, 92, 75, 0.65);
@@ -357,6 +359,42 @@ body::after {
   border-radius: 2px;
   padding: 0 2px;
   box-shadow: 0 1px 0 color-mix(in srgb, var(--highlight-text) 30%, transparent) inset;
+}
+
+/* 旁批：蓝色波浪下划线 */
+.annotation-mark {
+  text-decoration: underline wavy var(--annot);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+/* 旁批序号：圆圈数字（数字经 ::before 渲染，不进入正文文本） */
+.annotation-ref {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35em;
+  height: 1.35em;
+  padding: 0 0.12em;
+  box-sizing: border-box;
+  border: 1px solid var(--annot);
+  border-radius: 50%;
+  color: var(--annot);
+  background: color-mix(in srgb, var(--annot) 8%, transparent);
+  font-family: var(--font-ui);
+  font-size: 0.62em;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: 0.18em;
+  margin-left: 0.2em;
+  user-select: none;
+  pointer-events: none;
+}
+.annotation-ref::before {
+  content: attr(data-n);
+}
+.ProseMirror .annotation-ref {
+  margin-right: 0.05em;
 }
 .ProseMirror .is-editor-empty:first-child::before {
   content: attr(data-placeholder);

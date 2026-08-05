@@ -8,6 +8,7 @@ import { useDocStore } from '../../store/useDocStore'
 import { useUiStore } from '../../store/useUiStore'
 import { setEditor } from '../../lib/editorRef'
 import { StickyHighlight } from '../../lib/stickyHighlightPlugin'
+import { AnnotationMark, AnnotationRef } from '../../lib/annotationExtensions'
 import { AiBubbleMenu } from './AiBubbleMenu'
 
 export function Editor() {
@@ -30,6 +31,8 @@ export function Editor() {
       StarterKit,
       Highlight.configure({ multicolor: false }),
       StickyHighlight,
+      AnnotationMark,
+      AnnotationRef,
       Placeholder.configure({ placeholder: '落笔为墨，选中文字即可请 AI 朱批 …' }),
       CharacterCount,
     ],

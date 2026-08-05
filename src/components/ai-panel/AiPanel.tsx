@@ -33,7 +33,7 @@ export function AiPanel() {
         style={{ borderColor: 'var(--border)', background: 'var(--surface-2)' }}
       >
         <span className="seal mr-1.5 h-5 w-5 text-[10px]" title="朱批案牍">
-          批
+          牍
         </span>
         {TABS.map((t) => (
           <button

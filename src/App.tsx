@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { DocList } from './components/sidebar/DocList'
 import { Toolbar } from './components/editor/Toolbar'
 import { Editor } from './components/editor/Editor'
+import { AnnotationPanel } from './components/annotation/AnnotationPanel'
 import { AiPanel } from './components/ai-panel/AiPanel'
 import { SettingsPanel } from './components/sidebar/SettingsPanel'
 import { useSettingsStore, applyTheme } from './store/useSettingsStore'
@@ -37,12 +38,13 @@ export default function App() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       <DocList />
-      <main className="flex min-w-0 flex-1 flex-col">
+      <main className="flex min-w-0 flex-[3.5] flex-col">
         <Toolbar />
         <div className="flex-1 overflow-hidden">
           <Editor />
         </div>
       </main>
+      <AnnotationPanel />
       <AiPanel />
       <SettingsPanel />
     </div>

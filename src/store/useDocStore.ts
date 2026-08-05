@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import type { Doc } from '../types/doc'
 import * as storage from '../lib/storage'
 import { createId } from '../lib/id'
+import { useAnnotationStore } from './useAnnotationStore'
 
 const DOCS_KEY = 'docs'
 const ACTIVE_KEY = 'activeDocId'
@@ -61,6 +62,7 @@ export const useDocStore = create<DocState>((set, get) => ({
     }
     set({ docs, activeId })
     persist(docs, activeId)
+    useAnnotationStore.getState().clearDoc(id)
   },
 
   setActive: (id) => {

@@ -13,6 +13,7 @@ export type SelectionAction =
   | 'shorten'
   | 'style'
   | 'fix'
+  | 'annotate'
   | 'custom'
 
 export type FullDocAction = 'summary' | 'outline' | 'check'
@@ -48,6 +49,8 @@ function selectionInstruction(action: SelectionAction, custom?: string, styleTar
       return `请将【选中文字】转换成「${styleTarget}」的风格，保持信息不变。${ctx}`
     case 'fix':
       return `请纠正【选中文字】的错别字、语法和标点错误，直接返回修正后的完整文本。${ctx}`
+    case 'annotate':
+      return `请注解【选中文字】在上下文中的含义、用意与表达效果，不得改写原文，1-3 句。${ctx}`
     case 'custom':
       return custom && custom.trim() ? custom.trim() : '请处理【选中文字】。'
   }
@@ -82,6 +85,28 @@ export function buildFullDocMessages(action: FullDocAction, doc: string): ChatMe
   return [
     { role: 'system', content: SYSTEM_PROMPT },
     { role: 'user', content: `${instruction}\n\n【文章】\n${doc}` },
+  ]
+}
+
+const ANNOTATION_SYSTEM_PROMPT =
+  '你是一位深谙文章肌理的旁批者，专做书页边上的注解。' +
+  '只解释【选中文字】在上下文语境中的含义、用意与表达效果，帮助读者读懂作者为何这样写。' +
+  '不得改写原文、不得复述原文、不得评论文本之外的内容。' +
+  '用简洁自然的旁批口吻，1-3 句。直接输出注解内容，不加任何前缀或解释。'
+
+export interface AnnotationOptions {
+  before?: string
+  after?: string
+}
+
+export function buildAnnotationMessages(text: string, opts?: AnnotationOptions): ChatMessage[] {
+  const parts = ['请注解【选中文字】在上下文中的含义与作用。']
+  if (opts?.before) parts.push(`\n\n【上文】\n${opts.before}`)
+  parts.push(`\n\n【选中文字】\n${text}`)
+  if (opts?.after) parts.push(`\n\n【下文】\n${opts.after}`)
+  return [
+    { role: 'system', content: ANNOTATION_SYSTEM_PROMPT },
+    { role: 'user', content: parts.join('') },
   ]
 }
 
